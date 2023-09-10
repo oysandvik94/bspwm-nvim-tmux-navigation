@@ -1,4 +1,4 @@
-local util = require'nvim-tmux-navigation.tmux_util'
+local util = require 'nvim-tmux-navigation.tmux_util'
 
 local M = {}
 
@@ -15,7 +15,22 @@ local function vim_navigate(direction)
         -- success
     else
         -- error, cannot wincmd from the command-line window
-        vim.cmd([[ echohl ErrorMsg | echo 'E11: Invalid in command-line window; <CR> executes, CTRL-C quits' | echohl None ]])
+        vim.cmd(
+        [[ echohl ErrorMsg | echo 'E11: Invalid in command-line window; <CR> executes, CTRL-C quits' | echohl None ]])
+    end
+end
+
+local function no_tmux_navigate(direction)
+    local winnr = vim.fn.winnr()
+
+    -- try to navigate normally
+    vim_navigate(direction)
+
+    -- if we're in the same window after navigating
+    local is_same_winnr = (winnr == vim.fn.winnr())
+
+    if is_same_winnr then
+        require("bspwm_util").bspwm_change_pane(direction)
     end
 end
 
@@ -27,7 +42,6 @@ local tmux_control = true
 
 local function tmux_navigate(direction)
     if direction == 'n' then
-
         local is_last_win = (vim.fn.winnr() == vim.fn.winnr('$'))
 
         if is_last_win then
@@ -36,9 +50,7 @@ local function tmux_navigate(direction)
         else
             vim_navigate(direction)
         end
-
     elseif direction == 'p' then
-
         -- if the last pane was a tmux pane, then we need to handle control
         -- to tmux; otherwise, just issue a last pane command in vim
         if tmux_control == true then
@@ -46,9 +58,7 @@ local function tmux_navigate(direction)
         elseif tmux_control == false then
             vim_navigate(direction)
         end
-
     else
-
         -- save the current window number to check later whether we're in the same
         -- window after issuing a vim navigation command
         local winnr = vim.fn.winnr()
@@ -96,15 +106,20 @@ local navigate = nil
 if vim.env.TMUX ~= nil then
     navigate = tmux_navigate
 else
-    navigate = vim_navigate
+    navigate = no_tmux_navigate
 end
 
 -- lua functions
 function M.NvimTmuxNavigateLeft() navigate('h') end
+
 function M.NvimTmuxNavigateDown() navigate('j') end
+
 function M.NvimTmuxNavigateUp() navigate('k') end
+
 function M.NvimTmuxNavigateRight() navigate('l') end
+
 function M.NvimTmuxNavigateLastActive() navigate('p') end
+
 function M.NvimTmuxNavigateNext() navigate('n') end
 
 local function create_command(command_name, func, direction)

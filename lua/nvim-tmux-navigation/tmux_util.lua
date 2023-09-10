@@ -28,7 +28,15 @@ end
 
 -- change the current pane according to direction
 function util.tmux_change_pane(direction)
-    tmux_command("select-pane -" .. tmux_directions[direction])
+    if util.tmux_is_edge(direction) then
+        require("bspwm_util").bspwm_change_pane(direction)
+    else
+        tmux_command("select-pane -" .. tmux_directions[direction])
+    end
+end
+
+function util.tmux_is_edge(direction)
+    return tmux_command(string.format("display -p '#{pane_at_%s}'", tmux_directions[direction])) == 1
 end
 
 -- capitalization util, only capitalizes the first character of the whole word
