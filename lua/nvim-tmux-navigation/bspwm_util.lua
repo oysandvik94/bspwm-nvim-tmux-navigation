@@ -4,7 +4,7 @@ local bspwm_directions = { ['p'] = 'l', ['h'] = 'west', ['j'] = 'south', ['k'] =
 
 -- change the current pane according to direction
 function util.bspwm_change_pane(direction)
-    vim.fn.system("bspwm node -f " .. bspwm_directions[direction])
+    vim.fn.system("bspc node -f " .. bspwm_directions[direction])
 end
 
 return util

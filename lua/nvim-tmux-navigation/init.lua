@@ -30,7 +30,7 @@ local function no_tmux_navigate(direction)
     local is_same_winnr = (winnr == vim.fn.winnr())
 
     if is_same_winnr then
-        require("bspwm_util").bspwm_change_pane(direction)
+        require("nvim-tmux-navigation.bspwm_util").bspwm_change_pane(direction)
     end
 end
 
