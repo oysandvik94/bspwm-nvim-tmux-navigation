@@ -1,6 +1,7 @@
 local util = {}
 
 local tmux_directions = { ['p'] = 'l', ['h'] = 'L', ['j'] = 'D', ['k'] = 'U', ['l'] = 'R', ['n'] = 't:.+' }
+local tmux_edges = { ['h'] = 'left', ['j'] = 'bottom', ['k'] = 'top', ['l'] = 'right', ['n'] = 't:.+' }
 
 -- send the tmux command to the server running on the socket
 -- given by the environment variable $TMUX
@@ -36,7 +37,7 @@ function util.tmux_change_pane(direction)
 end
 
 function util.tmux_is_edge(direction)
-    return tmux_command(string.format("display -p '#{pane_at_%s}'", tmux_directions[direction])) == 1
+    return tmux_command(string.format("display -p '#{pane_at_%s}'", tmux_edges[direction])) == 1
 end
 
 -- capitalization util, only capitalizes the first character of the whole word

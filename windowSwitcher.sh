@@ -26,26 +26,24 @@ case $direction in
 esac
 
 window=$(xdotool getwindowfocus getwindowname)
-is_tmux=$(echo "$window" | grep -i "tmux ~")
 
-if [ -n "$is_tmux" ]
-then
+if [[ $window =~ .*tmux.*~ ]]; then
     pane_command=$(tmux display -p "#{pane_current_command}")
-    is_vim=$(echo "$pane_command" | grep -iqE '^[^TXZ ]+ +(\\S+\\/)?g?(view|n?vim?x?)(diff)?$')
+    is_vim=$(echo "$pane_command" | grep -i 'nvim')
 
     if [ -n "$is_vim" ]; then
         case $direction in
             west)
-                tmux send-keys C-h
+                tmux send-keys ":NvimTmuxNavigateLeft" enter
                 ;;
             east)
-                tmux send-keys C-l
+                tmux send-keys ":NvimTmuxNavigateRight" enter
                 ;;
             north)
-                tmux send-keys C-k
+                tmux send-keys ":NvimTmuxNavigateUp" enter
                 ;;
             south)
-                tmux send-keys C-j
+                tmux send-keys ":NvimTmuxNavigateDown" enter
                 ;;
         esac
     else
